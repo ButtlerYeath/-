@@ -1,0 +1,33 @@
+import requests
+
+# 电表查询链接
+query_url = "你的查询链接"
+
+# WxPusher 参数
+app_token = "你的AppToken"
+uid = "你的UID"
+
+# 1. 查询电费信息
+def get_electricity_info():
+    response = requests.get(query_url)
+    if response.status_code == 200:
+        return "查询成功，可以根据内容解析电费信息！"
+    else:
+        return f"查询失败，状态码：{response.status_code}"
+
+# 2. 用 WxPusher 推送消息
+def send_wxpusher_notification(content):
+    url = "https://wxpusher.zjiecode.com/api/send/message"
+    data = {
+        "appToken": app_token,
+        "content": content,
+        "summary": "电费提醒",  # 通知栏简短总结
+        "contentType": 1,     # 1是文本 2是html
+        "uids": [uid],        # 推送给指定UID
+    }
+    response = requests.post(url, json=data)
+    print("推送结果:", response.text)
+
+if __name__ == "__main__":
+    info = get_electricity_info()
+    send_wxpusher_notification(info)
